@@ -1,0 +1,127 @@
+// Librerías
+#include <Arduino.h>
+#include <string.h>
+
+// Definición de constantes
+const int leds = 64; // Número de LEDs
+const int pines[] = {2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31}; // Pines de los LEDs
+
+// Función para verificar el funcionamiento de los LEDs
+void verificacion() {
+  // Bucle para encender y apagar todos los LEDs
+  for (int i = 0; i < leds; i++) {
+    // Enciende el LED
+    digitalWrite(pines[i], HIGH);
+    // Espera un tiempo
+    delay(1000);
+    // Apaga el LED
+    digitalWrite(pines[i], LOW);
+  }
+}
+
+// Función para generar un patrón a partir de un string
+void imagen(const char* patron) {
+  // Bucle para recorrer el patrón
+  for (int i = 0; i < strlen(patron); i++) {
+    // Obtiene el LED a encender o apagar
+    int led = patron[i] - '0';
+    // Enciende o apaga el LED
+    digitalWrite(pines[led], HIGH);
+    // Espera un tiempo
+    delay(1000);
+    // Apaga el LED
+    digitalWrite(pines[led], LOW);
+  }
+}
+
+// Función para generar una secuencia de cuadrados de 2x2 LEDs
+int secuencia_cuadrados(int fila, int columna, int ancho) {
+  // Variables
+  int n = ancho * ancho;
+  int k = 0;
+
+  // Bucle para recorrer los cuadrados
+  for (int i = 0; i < n; i++) {
+    // Obtiene las coordenadas del LED
+    int j = fila + i % ancho;
+    int l = columna + i / ancho;
+    // Enciende el LED
+    digitalWrite(pines[j * 8 + l], HIGH);
+    // Espera un tiempo
+    delay(1000);
+    // Apaga el LED
+    digitalWrite(pines[j * 8 + l], LOW);
+    k++;
+  }
+
+  // Devuelve el número de LEDs encendidos
+  return k;
+}
+
+// Función para generar una flecha que apunta a la derecha en forma de V
+int flecha_derecha(int fila, int columna) {
+  // Variables
+  int n = 14;
+
+  // Bucle para generar la flecha
+  for (int i = 0; i < n; i++) {
+    // Obtiene las coordenadas del LED
+    int j = fila + i % 2;
+    // Enciende el LED
+    digitalWrite(pines[j * 8 + columna + i / 2], HIGH);
+  }
+
+  // Devuelve el número de LEDs encendidos
+  return n;
+}
+
+// Función para mostrar los patrones
+void mostrar_patrones(int tiempo_retardo) {
+  // Variables
+  int n;
+
+  // Bucle para mostrar los patrones
+  for (int i = 0; i < 4; i++) {
+    // Obtiene el número de LEDs a encender
+    switch (i) {
+      case 0:
+        n = secuencia_cuadrados(0, 0, 2);
+        break;
+      case 1:
+        n = secuencia_cuadrados(2, 2, 2);
+        break;
+      case 2:
+        n = flecha_derecha(0, 4);
+        break;
+      case 3:
+        n = flecha_derecha(4, 0);
+        break;
+    }
+
+    // Enciende los LEDs
+    for (int j = 0; j < n; j++) {
+      digitalWrite(pines[j], HIGH);
+    }
+
+    // Espera un tiempo
+    delay(tiempo_retardo);
+
+    // Apaga los LEDs
+    for (int j = 0; j < n; j++) {
+      digitalWrite(pines[j], LOW);
+    }
+  }
+}
+
+void setup() {
+  // Inicializar los pines de los LEDs como salidas
+  for (int i = 0; i < leds; i++) {
+    pinMode(pines[i], OUTPUT);
+  }
+}
+
+void loop() {
+  // Llamar a las funciones para verificar y mostrar patrones
+  verificacion();
+  mostrar_patrones(1000);
+}
